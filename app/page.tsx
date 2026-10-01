@@ -59,7 +59,7 @@ export default function Home() {
   return (
     <div className="min-h-full bg-slate-50">
       <header className="sticky top-0 z-10 bg-blue-900 text-white px-4 py-4 shadow">
-        <h1 className="text-lg font-bold">Guide</h1>
+        <h1 className="text-lg font-bold">GuidaPro</h1>
         <p className="text-sm text-blue-200">Elenco allievi</p>
       </header>
 

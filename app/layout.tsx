@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Guide",
+  title: "GuidaPro",
   description: "Scheda di valutazione delle lezioni di guida pratica, per allievo, da usare su iPhone.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Guide",
+    title: "GuidaPro",
   },
   icons: {
     icon: [
@@ -52,7 +52,7 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Guide" />
+        <meta name="apple-mobile-web-app-title" content="GuidaPro" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>

@@ -1,6 +1,6 @@
 {
-  "name": "Guide",
-  "short_name": "Guide",
+  "name": "GuidaPro",
+  "short_name": "GuidaPro",
   "description": "Scheda digitale di valutazione delle lezioni di guida pratica, per allievo.",
   "start_url": "/",
   "display": "standalone",

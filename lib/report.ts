@@ -41,7 +41,7 @@ export function generaReportPdf(allievo: Allievo, scheda: Scheda): jsPDF {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(18)
   doc.setTextColor(...BLU)
-  doc.text('Report Finale — Guide', marginX, y)
+  doc.text('Report Finale — GuidaPro', marginX, y)
   y += 9
 
   doc.setFont('helvetica', 'normal')
