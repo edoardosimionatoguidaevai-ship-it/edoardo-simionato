@@ -18,6 +18,7 @@ export interface Voce {
 export const AREE = ['PREPARAZIONE', 'COMANDI', 'MANOVRE', 'TECNICA', 'AMBIENTI'] as const
 
 export const VOCI: Voce[] = [
+  { id: 'sguardo', area: 'PREPARAZIONE', argomento: 'Sguardo', puntiChiave: 'Specchi, strada avanti, incroci, punti ciechi; anticipazione e scansione continua.' },
   { id: 'posizione-guida', area: 'PREPARAZIONE', argomento: 'Posizione di guida', puntiChiave: 'Sedile, schienale, poggiatesta, specchi, cintura, distanza dai pedali.' },
   { id: 'volante', area: 'PREPARAZIONE', argomento: 'Volante', puntiChiave: 'Posizione mani, sterzata, ritorno controllato, traiettoria.' },
   { id: 'gas', area: 'COMANDI', argomento: 'Gas', puntiChiave: 'Pressione e rilascio progressivi; mantenimento velocità.' },
@@ -40,12 +41,20 @@ export interface GuideCertificate {
   extraurbana: boolean
   autostrada: boolean
   notturne: boolean
+  sanCarlo: boolean
+  castelnuovo: boolean
+  domandePrimaFase: boolean
+  simulazioneEsame: boolean
 }
 
 export const GUIDE_LABELS: { key: keyof GuideCertificate; label: string }[] = [
   { key: 'extraurbana', label: 'Extraurbana' },
   { key: 'autostrada', label: 'Autostrada' },
   { key: 'notturne', label: 'Notturne' },
+  { key: 'sanCarlo', label: 'San Carlo' },
+  { key: 'castelnuovo', label: 'Castelnuovo' },
+  { key: 'domandePrimaFase', label: 'Domande prima fase' },
+  { key: 'simulazioneEsame', label: 'Simulazione esame' },
 ]
 
 export interface Scheda {
@@ -64,7 +73,15 @@ function schedaVuota(allievoId: string): Scheda {
     aggiornata: '',
     voci: {},
     spiegato: {},
-    guideCertificate: { extraurbana: false, autostrada: false, notturne: false },
+    guideCertificate: {
+      extraurbana: false,
+      autostrada: false,
+      notturne: false,
+      sanCarlo: false,
+      castelnuovo: false,
+      domandePrimaFase: false,
+      simulazioneEsame: false,
+    },
   }
 }
 
