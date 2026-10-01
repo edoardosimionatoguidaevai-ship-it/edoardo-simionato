@@ -51,6 +51,9 @@ export const GUIDE_LABELS: { key: keyof GuideCertificate; label: string }[] = [
   { key: 'extraurbana', label: 'Extraurbana' },
   { key: 'autostrada', label: 'Autostrada' },
   { key: 'notturne', label: 'Notturne' },
+]
+
+export const ALTRE_VERIFICHE_LABELS: { key: keyof GuideCertificate; label: string }[] = [
   { key: 'sanCarlo', label: 'San Carlo' },
   { key: 'castelnuovo', label: 'Castelnuovo' },
   { key: 'domandePrimaFase', label: 'Domande prima fase' },

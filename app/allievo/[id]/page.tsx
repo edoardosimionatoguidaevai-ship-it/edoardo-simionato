@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Allievo, getAllievo, updateAllievo } from '@/lib/allievi'
-import { AREE, GUIDE_LABELS, GuideCertificate, Livello, Scheda, VOCI, getScheda, saveScheda } from '@/lib/scheda'
+import { ALTRE_VERIFICHE_LABELS, AREE, GUIDE_LABELS, GuideCertificate, Livello, Scheda, VOCI, getScheda, saveScheda } from '@/lib/scheda'
 import { condividiOScaricaReport } from '@/lib/report'
 import { comprimiImmagine } from '@/lib/foto'
 
@@ -203,6 +203,24 @@ export default function SchedaAllievo() {
           <h2 className="bg-sky-100 text-sky-900 font-bold text-sm px-3 py-2 rounded-t-lg">GUIDE CERTIFICATE</h2>
           <div className="bg-white rounded-b-lg border border-slate-200 p-3 grid grid-cols-3 gap-2">
             {GUIDE_LABELS.map(g => {
+              const attivo = scheda.guideCertificate[g.key]
+              return (
+                <button
+                  key={g.key}
+                  onClick={() => toggleGuida(g.key)}
+                  className={`rounded-lg py-3 text-sm font-semibold border ${attivo ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-slate-600 border-slate-300'}`}
+                >
+                  {attivo ? '✓ ' : ''}{g.label}
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="bg-sky-100 text-sky-900 font-bold text-sm px-3 py-2 rounded-t-lg">ALTRE VERIFICHE</h2>
+          <div className="bg-white rounded-b-lg border border-slate-200 p-3 grid grid-cols-2 gap-2">
+            {ALTRE_VERIFICHE_LABELS.map(g => {
               const attivo = scheda.guideCertificate[g.key]
               return (
                 <button

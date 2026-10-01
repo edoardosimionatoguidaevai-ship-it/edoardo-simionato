@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf'
 import { Allievo } from './allievi'
-import { AREE, GUIDE_LABELS, LIVELLO_LABELS, Scheda, VOCI } from './scheda'
+import { ALTRE_VERIFICHE_LABELS, AREE, GUIDE_LABELS, LIVELLO_LABELS, Scheda, VOCI } from './scheda'
 
 const BLU = [30, 58, 138] as const
 const TESTO = [30, 41, 59] as const
@@ -90,31 +90,36 @@ export function generaReportPdf(allievo: Allievo, scheda: Scheda): jsPDF {
     y += 3
   }
 
-  saltaPaginaSeNecessario(16)
-  doc.setFillColor(...AREA_BG)
-  doc.rect(marginX, y - 5, pageWidth - marginX * 2, 7, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(10)
-  doc.setTextColor(...BLU)
-  doc.text('GUIDE CERTIFICATE', marginX + 2, y)
-  y += 9
-
-  for (const g of GUIDE_LABELS) {
-    saltaPaginaSeNecessario(7)
-    const fatto = !!scheda.guideCertificate[g.key]
-
-    doc.setFont('helvetica', 'normal')
+  function stampaElencoVerifiche(titolo: string, labels: typeof GUIDE_LABELS) {
+    saltaPaginaSeNecessario(16)
+    doc.setFillColor(...AREA_BG)
+    doc.rect(marginX, y - 5, pageWidth - marginX * 2, 7, 'F')
+    doc.setFont('helvetica', 'bold')
     doc.setFontSize(10)
-    doc.setTextColor(...TESTO)
-    doc.text(g.label, marginX, y)
+    doc.setTextColor(...BLU)
+    doc.text(titolo, marginX + 2, y)
+    y += 9
 
-    doc.setFontSize(9)
-    setColore(doc, fatto ? [22, 101, 52] : GRIGIO)
-    doc.text(fatto ? '✓ Fatto' : '— Non fatto', pageWidth - marginX - 30, y)
+    for (const g of labels) {
+      saltaPaginaSeNecessario(7)
+      const fatto = !!scheda.guideCertificate[g.key]
 
-    y += 6.5
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(10)
+      doc.setTextColor(...TESTO)
+      doc.text(g.label, marginX, y)
+
+      doc.setFontSize(9)
+      setColore(doc, fatto ? [22, 101, 52] : GRIGIO)
+      doc.text(fatto ? '✓ Fatto' : '— Non fatto', pageWidth - marginX - 30, y)
+
+      y += 6.5
+    }
+    y += 3
   }
-  y += 3
+
+  stampaElencoVerifiche('GUIDE CERTIFICATE', GUIDE_LABELS)
+  stampaElencoVerifiche('ALTRE VERIFICHE', ALTRE_VERIFICHE_LABELS)
 
   saltaPaginaSeNecessario(14)
   y += 4
