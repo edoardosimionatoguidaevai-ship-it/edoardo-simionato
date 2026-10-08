@@ -13,6 +13,7 @@ export default function Home() {
   const [nuovoCognome, setNuovoCognome] = useState('')
   const [formAperto, setFormAperto] = useState(false)
   const [messaggioBackup, setMessaggioBackup] = useState('')
+  const [fotoGrande, setFotoGrande] = useState<string | null>(null)
 
   useEffect(() => {
     setAllievi(getAllievi())
@@ -64,50 +65,7 @@ export default function Home() {
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-4">
-        <input
-          type="text"
-          placeholder="Cerca allievo..."
-          value={filtro}
-          onChange={e => setFiltro(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-4 py-3 text-base mb-4"
-        />
-
-        <ul className="space-y-2 mb-4">
-          {allieviFiltrati.map(a => (
-            <li key={a.id} className="flex items-center gap-2">
-              <button
-                onClick={() => router.push(`/allievo/${a.id}`)}
-                className="flex-1 flex items-center gap-3 text-left bg-white rounded-lg border border-slate-200 px-4 py-3 shadow-sm active:bg-slate-100"
-              >
-                {a.foto ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={a.foto}
-                    alt={`Foto di ${a.nome} ${a.cognome}`}
-                    className="w-14 h-14 rounded-full object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-slate-200 flex items-center justify-center text-2xl shrink-0">
-                    👤
-                  </div>
-                )}
-                <span className="font-semibold text-slate-800">{a.cognome} {a.nome}</span>
-              </button>
-              <button
-                onClick={() => handleElimina(a.id)}
-                aria-label="Elimina allievo"
-                className="text-red-500 px-3 py-3 text-xl"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-          {allieviFiltrati.length === 0 && (
-            <li className="text-center text-slate-400 py-8">Nessun allievo trovato</li>
-          )}
-        </ul>
-
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
+        <div className="bg-white rounded-lg border border-slate-200 p-4 mb-4">
           {formAperto ? (
             <form onSubmit={handleAggiungi} className="flex flex-col gap-2">
               <div className="flex gap-2">
@@ -146,6 +104,58 @@ export default function Home() {
           )}
         </div>
 
+        <input
+          type="text"
+          placeholder="Cerca allievo..."
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          className="w-full rounded-lg border border-slate-300 px-4 py-3 text-base mb-4"
+        />
+
+        <ul className="space-y-2 mb-4">
+          {allieviFiltrati.map(a => (
+            <li key={a.id} className="flex items-center gap-2">
+              <div
+                onClick={() => router.push(`/allievo/${a.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') router.push(`/allievo/${a.id}`)
+                }}
+                className="flex-1 flex items-center gap-3 text-left bg-white rounded-lg border border-slate-200 px-4 py-3 shadow-sm active:bg-slate-100 cursor-pointer"
+              >
+                {a.foto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={a.foto}
+                    alt={`Foto di ${a.nome} ${a.cognome}`}
+                    onClick={e => {
+                      e.stopPropagation()
+                      setFotoGrande(a.foto!)
+                    }}
+                    className="w-14 h-14 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-slate-200 flex items-center justify-center text-2xl shrink-0">
+                    👤
+                  </div>
+                )}
+                <span className="font-semibold text-slate-800">{a.cognome} {a.nome}</span>
+              </div>
+              <button
+                onClick={() => handleElimina(a.id)}
+                aria-label="Elimina allievo"
+                className="text-red-500 px-3 py-3 text-xl"
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+          {allieviFiltrati.length === 0 && (
+            <li className="text-center text-slate-400 py-8">Nessun allievo trovato</li>
+          )}
+        </ul>
+
         <div className="bg-white rounded-lg border border-slate-200 p-4 mt-4">
           <p className="text-xs text-slate-500 mb-3">
             Backup: salva una copia di tutti gli allievi e le schede, o ripristinala su un altro dispositivo.
@@ -165,6 +175,27 @@ export default function Home() {
           {messaggioBackup && <p className="text-xs text-slate-600 mt-2">{messaggioBackup}</p>}
         </div>
       </main>
+
+      {fotoGrande && (
+        <div
+          onClick={() => setFotoGrande(null)}
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+        >
+          <button
+            onClick={() => setFotoGrande(null)}
+            aria-label="Chiudi"
+            className="absolute top-4 right-4 text-white text-3xl leading-none"
+          >
+            ✕
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={fotoGrande}
+            alt="Foto allievo ingrandita"
+            className="max-w-full max-h-full rounded-xl object-contain"
+          />
+        </div>
+      )}
     </div>
   )
 }
