@@ -156,7 +156,11 @@ export default function Home() {
           📤 Invia i miei progressi all&apos;istruttore
         </button>
 
-        <button onClick={handleAzzera} className="text-xs text-slate-400 underline mt-4 self-center">
+        <p className="text-xs text-slate-400 text-center mt-4">
+          Domande ufficiali del listato ministeriale A/B del 23/04/2025
+        </p>
+
+        <button onClick={handleAzzera} className="text-xs text-slate-400 underline self-center">
           Azzera progressi
         </button>
       </main>

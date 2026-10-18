@@ -18,12 +18,14 @@ WhatsApp chiede all'allievo a quale contatto inviare.
 
 ## Domande
 
-`public/quiz.json` contiene 7131 domande in 25 capitoli (listato ministeriale 2023, dal repository
-[Ed0ardo/QuizPatenteB](https://github.com/Ed0ardo/QuizPatenteB)); le figure sono in `public/img_sign/`.
+`public/quiz.json` contiene le 7106 domande ufficiali in 25 capitoli del
+[listato A/B del Portale dell'Automobilista del 23 aprile 2025](https://www.ilportaledellautomobilista.it/web/portale-automobilista/dettaglio-news/-/asset_publisher/V57QhEdoCmc7/document/id/121608540),
+estratte dal PDF ministeriale dal repository [AaronGreedy/patente-zero](https://github.com/AaronGreedy/patente-zero)
+(`data/bank.json`, con l'hash SHA-256 del PDF nei metadati). Le 409 figure sono in `public/images/`.
 Per aggiornare il listato con un file nello stesso formato:
 
 ```bash
-npm run converti-listato -- percorso/quizPatenteB.json
+npm run converti-listato -- percorso/bank.json
 ```
 
 ## Sviluppo
