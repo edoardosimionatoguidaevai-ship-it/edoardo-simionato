@@ -28,6 +28,15 @@ Per aggiornare il listato con un file nello stesso formato:
 npm run converti-listato -- percorso/bank.json
 ```
 
+Per verificare l'app con un PDF ufficiale del listato:
+
+```bash
+pdftotext -layout listato.pdf listato.txt && python3 scripts/verifica-pdf.py listato.txt
+```
+
+Verifica fatta con il PDF ufficiale "Conseguimento A-B italiano" del 26/09/2021: tutte le sue 7020 domande
+sono nell'app con testo e risposta identici; le altre 86 dell'app vengono dal listato del 23/04/2025.
+
 ## Sviluppo
 
 ```bash
