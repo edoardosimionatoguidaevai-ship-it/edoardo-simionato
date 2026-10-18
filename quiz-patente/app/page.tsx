@@ -1,14 +1,85 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Intestazione from '@/components/Intestazione'
-import { ESAME_DOMANDE, ESAME_ERRORI_MAX, ESAME_MINUTI } from '@/lib/quiz'
-import { azzeraProgressi, idErrori, useRisposte, useSimulazioni } from '@/lib/progressi'
+import { Capitolo, ESAME_DOMANDE, ESAME_ERRORI_MAX, ESAME_MINUTI, caricaCapitoli } from '@/lib/quiz'
+import { azzeraProgressi, idErrori, salvaNome, useNome, useRisposte, useSimulazioni } from '@/lib/progressi'
+import { apriWhatsApp, messaggioProgressi } from '@/lib/whatsapp'
+
+function RichiestaNome({ iniziale, onSalvato, onAnnulla }: {
+  iniziale: string
+  onSalvato: () => void
+  onAnnulla?: () => void
+}) {
+  const [nome, setNome] = useState(iniziale)
+
+  function handleSalva(e: React.FormEvent) {
+    e.preventDefault()
+    if (!nome.trim()) return
+    salvaNome(nome)
+    onSalvato()
+  }
+
+  return (
+    <form onSubmit={handleSalva} className="bg-white rounded-lg border border-slate-200 p-6 flex flex-col gap-3">
+      <p className="text-lg font-bold text-slate-800">👋 Come ti chiami?</p>
+      <p className="text-sm text-slate-500">Il tuo nome comparirà nei risultati che invii all&apos;istruttore.</p>
+      <input
+        type="text"
+        placeholder="Nome e cognome"
+        value={nome}
+        onChange={e => setNome(e.target.value)}
+        autoFocus
+        className="rounded-lg border border-slate-300 px-4 py-3 text-base text-slate-800"
+      />
+      <button type="submit" disabled={!nome.trim()} className="bg-green-800 text-white rounded-lg py-3 font-semibold disabled:opacity-50">
+        Inizia
+      </button>
+      {onAnnulla && (
+        <button type="button" onClick={onAnnulla} className="text-sm text-slate-500">
+          Annulla
+        </button>
+      )}
+    </form>
+  )
+}
 
 export default function Home() {
+  const nome = useNome()
   const risposte = useRisposte()
   const simulazioni = useSimulazioni()
+  const [capitoli, setCapitoli] = useState<Capitolo[] | null>(null)
+  const [modificaNome, setModificaNome] = useState(false)
   const errori = risposte ? idErrori(risposte).size : 0
+
+  // Caricate in anticipo: il messaggio WhatsApp va aperto subito al tocco, altrimenti iPhone lo blocca
+  useEffect(() => {
+    caricaCapitoli().then(setCapitoli).catch(() => {})
+  }, [])
+
+  function handleInviaProgressi() {
+    if (!capitoli || !nome) return
+    apriWhatsApp(messaggioProgressi(nome, simulazioni ?? [], risposte ?? {}, capitoli))
+  }
+
+  if (nome === null) return <Intestazione titolo="Quiz Patente B" sottotitolo="Domande ministeriali" />
+
+  if (nome === '' || modificaNome) {
+    return (
+      <div className="min-h-full">
+        <Intestazione titolo="Quiz Patente B" sottotitolo="Domande ministeriali" />
+        <main className="max-w-xl mx-auto px-4 py-6">
+          <RichiestaNome
+            iniziale={nome}
+            onSalvato={() => setModificaNome(false)}
+            onAnnulla={nome ? () => setModificaNome(false) : undefined}
+            key={String(modificaNome)}
+          />
+        </main>
+      </div>
+    )
+  }
 
   function handleAzzera() {
     if (!confirm('Cancellare tutti i progressi e lo storico delle simulazioni?')) return
@@ -20,7 +91,15 @@ export default function Home() {
 
   return (
     <div className="min-h-full">
-      <Intestazione titolo="Quiz Patente B" sottotitolo="Domande ministeriali" />
+      <Intestazione
+        titolo="Quiz Patente B"
+        sottotitolo={`Ciao, ${nome}`}
+        destra={
+          <button onClick={() => setModificaNome(true)} className="text-sm text-green-200 underline">
+            Cambia nome
+          </button>
+        }
+      />
 
       <main className="max-w-xl mx-auto px-4 py-4 flex flex-col gap-3">
         <Link href="/esame" className="block bg-green-800 text-white rounded-lg p-4 shadow active:bg-green-900">
@@ -68,6 +147,14 @@ export default function Home() {
             </>
           )}
         </section>
+
+        <button
+          onClick={handleInviaProgressi}
+          disabled={!capitoli}
+          className="bg-[#25D366] text-white rounded-lg py-3 font-bold disabled:opacity-60"
+        >
+          📤 Invia i miei progressi all&apos;istruttore
+        </button>
 
         <button onClick={handleAzzera} className="text-xs text-slate-400 underline mt-4 self-center">
           Azzera progressi

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Intestazione from '@/components/Intestazione'
 import TestoDomanda from '@/components/TestoDomanda'
 import {
+  Capitolo,
   DomandaConCapitolo,
   ESAME_DOMANDE,
   ESAME_ERRORI_MAX,
@@ -12,7 +13,8 @@ import {
   caricaCapitoli,
   generaEsame,
 } from '@/lib/quiz'
-import { registraRisposte, registraSimulazione } from '@/lib/progressi'
+import { Simulazione, getNome, registraRisposte, registraSimulazione } from '@/lib/progressi'
+import { apriWhatsApp, messaggioSimulazione } from '@/lib/whatsapp'
 
 type Fase = 'inizio' | 'in-corso' | 'risultato'
 
@@ -24,12 +26,13 @@ function formattaTempo(secondi: number): string {
 
 export default function Esame() {
   const [fase, setFase] = useState<Fase>('inizio')
+  const [capitoli, setCapitoli] = useState<Capitolo[]>([])
   const [domande, setDomande] = useState<DomandaConCapitolo[]>([])
   const [risposte, setRisposte] = useState<(boolean | null)[]>([])
   const [indice, setIndice] = useState(0)
   const [inizio, setInizio] = useState(0)
   const [rimanenti, setRimanenti] = useState(ESAME_MINUTI * 60)
-  const [durata, setDurata] = useState(0)
+  const [simulazione, setSimulazione] = useState<Simulazione | null>(null)
   const [soloErrori, setSoloErrori] = useState(true)
   const [caricamento, setCaricamento] = useState(false)
   const [errore, setErrore] = useState(false)
@@ -38,7 +41,9 @@ export default function Esame() {
     setCaricamento(true)
     setErrore(false)
     try {
-      const nuove = generaEsame(await caricaCapitoli())
+      const tutti = await caricaCapitoli()
+      const nuove = generaEsame(tutti)
+      setCapitoli(tutti)
       setDomande(nuove)
       setRisposte(nuove.map(() => null))
       setIndice(0)
@@ -57,14 +62,15 @@ export default function Esame() {
     const esiti = domande.map((d, i) => ({ id: d.id, corretta: risposte[i] === d.a }))
     const errori = esiti.filter(e => !e.corretta).length
     const secondi = Math.min(ESAME_MINUTI * 60, Math.round((Date.now() - inizio) / 1000))
-    registraRisposte(esiti)
-    registraSimulazione({
+    const nuova: Simulazione = {
       data: new Date().toISOString(),
       errori,
       superato: errori <= ESAME_ERRORI_MAX,
       durataSecondi: secondi,
-    })
-    setDurata(secondi)
+    }
+    registraRisposte(esiti)
+    registraSimulazione(nuova)
+    setSimulazione(nuova)
     setFase('risultato')
     window.scrollTo(0, 0)
   }, [domande, risposte, inizio])
@@ -135,7 +141,7 @@ export default function Esame() {
     )
   }
 
-  if (fase === 'risultato') {
+  if (fase === 'risultato' && simulazione) {
     const errori = domande.filter((d, i) => risposte[i] !== d.a).length
     const superato = errori <= ESAME_ERRORI_MAX
     const elenco = domande.map((d, i) => ({ d, i })).filter(({ d, i }) => !soloErrori || risposte[i] !== d.a)
@@ -146,9 +152,16 @@ export default function Esame() {
           <div className={`rounded-lg p-6 text-center text-white ${superato ? 'bg-green-700' : 'bg-red-600'}`}>
             <p className="text-2xl font-bold">{superato ? 'IDONEO' : 'NON IDONEO'}</p>
             <p className="mt-1">
-              {errori} {errori === 1 ? 'errore' : 'errori'} su {domande.length} · tempo {formattaTempo(durata)}
+              {errori} {errori === 1 ? 'errore' : 'errori'} su {domande.length} · tempo {formattaTempo(simulazione.durataSecondi)}
             </p>
           </div>
+
+          <button
+            onClick={() => apriWhatsApp(messaggioSimulazione(getNome(), simulazione, domande, risposte, capitoli))}
+            className="bg-[#25D366] text-white rounded-lg py-3 font-bold"
+          >
+            📤 Invia all&apos;istruttore su WhatsApp
+          </button>
 
           <div className="flex gap-2">
             <button onClick={inizia} className="flex-1 bg-green-800 text-white rounded-lg py-3 font-semibold">

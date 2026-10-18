@@ -6,7 +6,7 @@ import Intestazione from '@/components/Intestazione'
 import Esercizio from '@/components/Esercizio'
 import { Capitolo, DomandaConCapitolo, caricaCapitoli, domandeCapitolo } from '@/lib/quiz'
 
-const DOMANDE_PER_GIRO = 20
+const DOMANDE_PER_GIRO = 30
 
 export default function EsercizioCapitolo() {
   const params = useParams<{ id: string }>()

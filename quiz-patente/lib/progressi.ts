@@ -4,6 +4,7 @@ import { useMemo, useSyncExternalStore } from 'react'
 
 const KEY_RISPOSTE = 'quizpatente-risposte'
 const KEY_SIMULAZIONI = 'quizpatente-simulazioni'
+const KEY_NOME = 'quizpatente-nome'
 const MAX_SIMULAZIONI = 50
 
 // Ultimo esito per ogni domanda: 1 = risposta giusta, 0 = sbagliata.
@@ -85,6 +86,19 @@ export function registraSimulazione(s: Simulazione): void {
 
 export function useSimulazioni(): Simulazione[] | null {
   return useSalvato<Simulazione[]>(KEY_SIMULAZIONI, [])
+}
+
+// Nome e cognome dell'allievo, chiesto al primo avvio e inserito nei messaggi all'istruttore
+export function useNome(): string | null {
+  return useSalvato<string>(KEY_NOME, '')
+}
+
+export function getNome(): string {
+  return leggi<string>(KEY_NOME, '')
+}
+
+export function salvaNome(nome: string): void {
+  scrivi(KEY_NOME, nome.trim())
 }
 
 export function azzeraProgressi(): void {
