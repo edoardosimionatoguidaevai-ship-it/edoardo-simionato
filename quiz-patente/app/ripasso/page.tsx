@@ -7,7 +7,7 @@ import Esercizio from '@/components/Esercizio'
 import { DomandaConCapitolo, caricaCapitoli, domandePerId, mescola } from '@/lib/quiz'
 import { getIdErrori } from '@/lib/progressi'
 
-const DOMANDE_PER_GIRO = 20
+const DOMANDE_PER_GIRO = 30
 
 export default function Ripasso() {
   const [domande, setDomande] = useState<DomandaConCapitolo[] | null>(null)
