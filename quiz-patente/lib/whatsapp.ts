@@ -3,7 +3,7 @@ import { Risposte, Simulazione, idErrori } from './progressi'
 
 // Numero WhatsApp dell'istruttore, con prefisso internazionale e senza spazi o "+" (es. '393331234567').
 // Se vuoto, WhatsApp chiede all'allievo a quale contatto inviare il messaggio.
-export const NUMERO_WHATSAPP_ISTRUTTORE = ''
+export const NUMERO_WHATSAPP_ISTRUTTORE = '393408605334'
 
 const MAX_CARATTERI_DOMANDA = 90
 
