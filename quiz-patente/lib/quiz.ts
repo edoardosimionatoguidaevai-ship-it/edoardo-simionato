@@ -21,11 +21,20 @@ export const ESAME_DOMANDE = 30
 export const ESAME_MINUTI = 20
 export const ESAME_ERRORI_MAX = 3
 
+// Cartella dei file pubblici (domande e figure). Vuota nella versione di prova su claude.ai,
+// dove i file stanno accanto alla pagina.
+const BASE_FILE = process.env.NEXT_PUBLIC_BASE_FILE ?? '/'
+
+export function urlFigura(img: string): string {
+  if (img.startsWith('data:')) return img // figure incorporate nella versione di prova
+  return BASE_FILE + img.replace(/^\//, '')
+}
+
 let cache: Promise<Capitolo[]> | null = null
 
 export function caricaCapitoli(): Promise<Capitolo[]> {
   if (!cache) {
-    cache = fetch('/quiz.json')
+    cache = fetch(BASE_FILE + 'quiz.json')
       .then(r => {
         if (!r.ok) throw new Error('Impossibile caricare le domande')
         return r.json()

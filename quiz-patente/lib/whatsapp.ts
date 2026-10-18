@@ -7,9 +7,8 @@ export const NUMERO_WHATSAPP_ISTRUTTORE = '393408605334'
 
 const MAX_CARATTERI_DOMANDA = 90
 
-export function apriWhatsApp(testo: string): void {
-  const url = `https://wa.me/${NUMERO_WHATSAPP_ISTRUTTORE}?text=${encodeURIComponent(testo)}`
-  window.open(url, '_blank')
+export function linkWhatsApp(testo: string): string {
+  return `https://wa.me/${NUMERO_WHATSAPP_ISTRUTTORE}?text=${encodeURIComponent(testo)}`
 }
 
 function abbrevia(testo: string): string {

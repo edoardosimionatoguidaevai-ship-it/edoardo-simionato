@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Intestazione from '@/components/Intestazione'
 import { Capitolo, ESAME_DOMANDE, ESAME_ERRORI_MAX, ESAME_MINUTI, caricaCapitoli } from '@/lib/quiz'
 import { azzeraProgressi, idErrori, salvaNome, useNome, useRisposte, useSimulazioni } from '@/lib/progressi'
-import { apriWhatsApp, messaggioProgressi } from '@/lib/whatsapp'
+import { linkWhatsApp, messaggioProgressi } from '@/lib/whatsapp'
 
 function RichiestaNome({ iniziale, onSalvato, onAnnulla }: {
   iniziale: string
@@ -51,17 +51,13 @@ export default function Home() {
   const simulazioni = useSimulazioni()
   const [capitoli, setCapitoli] = useState<Capitolo[] | null>(null)
   const [modificaNome, setModificaNome] = useState(false)
+  const [confermaAzzera, setConfermaAzzera] = useState(false)
   const errori = risposte ? idErrori(risposte).size : 0
 
-  // Caricate in anticipo: il messaggio WhatsApp va aperto subito al tocco, altrimenti iPhone lo blocca
+  // Servono per il riepilogo dei progressi da inviare su WhatsApp
   useEffect(() => {
     caricaCapitoli().then(setCapitoli).catch(() => {})
   }, [])
-
-  function handleInviaProgressi() {
-    if (!capitoli || !nome) return
-    apriWhatsApp(messaggioProgressi(nome, simulazioni ?? [], risposte ?? {}, capitoli))
-  }
 
   if (nome === null) return <Intestazione titolo="Quiz Patente B" sottotitolo="Domande ministeriali" />
 
@@ -82,8 +78,8 @@ export default function Home() {
   }
 
   function handleAzzera() {
-    if (!confirm('Cancellare tutti i progressi e lo storico delle simulazioni?')) return
     azzeraProgressi()
+    setConfermaAzzera(false)
   }
 
   const ultime = (simulazioni ?? []).slice(0, 10)
@@ -148,21 +144,42 @@ export default function Home() {
           )}
         </section>
 
-        <button
-          onClick={handleInviaProgressi}
-          disabled={!capitoli}
-          className="bg-[#25D366] text-white rounded-lg py-3 font-bold disabled:opacity-60"
-        >
-          📤 Invia i miei progressi all&apos;istruttore
-        </button>
+        {capitoli ? (
+          <a
+            href={linkWhatsApp(messaggioProgressi(nome, simulazioni ?? [], risposte ?? {}, capitoli))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-[#25D366] text-white rounded-lg py-3 font-bold"
+          >
+            📤 Invia i miei progressi all&apos;istruttore
+          </a>
+        ) : (
+          <p className="text-center bg-[#25D366] text-white rounded-lg py-3 font-bold opacity-60">
+            📤 Invia i miei progressi all&apos;istruttore
+          </p>
+        )}
 
         <p className="text-xs text-slate-400 text-center mt-4">
           Domande ufficiali del listato ministeriale A/B del 23/04/2025
         </p>
 
-        <button onClick={handleAzzera} className="text-xs text-slate-400 underline self-center">
-          Azzera progressi
-        </button>
+        {confermaAzzera ? (
+          <div className="bg-white rounded-lg border border-red-300 p-4 flex flex-col gap-3">
+            <p className="text-sm text-slate-700 text-center">Cancellare tutti i progressi e lo storico delle simulazioni?</p>
+            <div className="flex gap-2">
+              <button onClick={handleAzzera} className="flex-1 bg-red-600 text-white rounded-lg py-2 font-semibold">
+                Sì, cancella
+              </button>
+              <button onClick={() => setConfermaAzzera(false)} className="flex-1 rounded-lg py-2 border border-slate-300 text-slate-700">
+                Annulla
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => setConfermaAzzera(true)} className="text-xs text-slate-400 underline self-center">
+            Azzera progressi
+          </button>
+        )}
       </main>
     </div>
   )

@@ -12,9 +12,10 @@ import {
   ESAME_MINUTI,
   caricaCapitoli,
   generaEsame,
+  urlFigura,
 } from '@/lib/quiz'
 import { Simulazione, getNome, registraRisposte, registraSimulazione } from '@/lib/progressi'
-import { apriWhatsApp, messaggioSimulazione } from '@/lib/whatsapp'
+import { linkWhatsApp, messaggioSimulazione } from '@/lib/whatsapp'
 
 type Fase = 'inizio' | 'in-corso' | 'risultato'
 
@@ -36,6 +37,7 @@ export default function Esame() {
   const [soloErrori, setSoloErrori] = useState(true)
   const [caricamento, setCaricamento] = useState(false)
   const [errore, setErrore] = useState(false)
+  const [confermaConsegna, setConfermaConsegna] = useState(false)
 
   async function inizia() {
     setCaricamento(true)
@@ -50,6 +52,7 @@ export default function Esame() {
       setInizio(Date.now())
       setRimanenti(ESAME_MINUTI * 60)
       setSoloErrori(true)
+      setConfermaConsegna(false)
       setFase('in-corso')
     } catch {
       setErrore(true)
@@ -106,14 +109,6 @@ export default function Esame() {
     setRisposte(r => r.map((v, i) => (i === indice ? valore : v)))
   }
 
-  function chiediConsegna() {
-    const mancanti = risposte.filter(r => r === null).length
-    const messaggio = mancanti > 0
-      ? `Hai ancora ${mancanti} ${mancanti === 1 ? 'domanda' : 'domande'} senza risposta (contano come errori). Consegnare?`
-      : 'Consegnare la scheda?'
-    if (confirm(messaggio)) consegna()
-  }
-
   if (fase === 'inizio') {
     return (
       <div className="min-h-full">
@@ -156,12 +151,14 @@ export default function Esame() {
             </p>
           </div>
 
-          <button
-            onClick={() => apriWhatsApp(messaggioSimulazione(getNome(), simulazione, domande, risposte, capitoli))}
-            className="bg-[#25D366] text-white rounded-lg py-3 font-bold"
+          <a
+            href={linkWhatsApp(messaggioSimulazione(getNome(), simulazione, domande, risposte, capitoli))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-[#25D366] text-white rounded-lg py-3 font-bold"
           >
             📤 Invia all&apos;istruttore su WhatsApp
-          </button>
+          </a>
 
           <div className="flex gap-2">
             <button onClick={inizia} className="flex-1 bg-green-800 text-white rounded-lg py-3 font-semibold">
@@ -190,7 +187,7 @@ export default function Esame() {
                   <div className="flex gap-3">
                     {d.img && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={d.img} alt="Figura della domanda" className="w-20 h-20 object-contain shrink-0" />
+                      <img src={urlFigura(d.img)} alt="Figura della domanda" className="w-20 h-20 object-contain shrink-0" />
                     )}
                     <p className="text-slate-800">{d.q}</p>
                   </div>
@@ -218,6 +215,7 @@ export default function Esame() {
   const domanda = domande[indice]
   const risposta = risposte[indice]
   const date = risposte.filter(r => r !== null).length
+  const mancanti = domande.length - date
 
   return (
     <div className="min-h-full">
@@ -281,9 +279,27 @@ export default function Esame() {
           ))}
         </div>
 
-        <button onClick={chiediConsegna} className="bg-green-800 text-white rounded-lg py-4 text-lg font-bold mt-2">
-          Consegna
-        </button>
+        {confermaConsegna ? (
+          <div className="bg-white rounded-lg border-2 border-green-800 p-4 mt-2 flex flex-col gap-3">
+            <p className="text-slate-800 font-semibold text-center">
+              {mancanti > 0
+                ? `Hai ancora ${mancanti} ${mancanti === 1 ? 'domanda' : 'domande'} senza risposta: contano come errori. Consegnare?`
+                : 'Consegnare la scheda?'}
+            </p>
+            <div className="flex gap-2">
+              <button onClick={consegna} className="flex-1 bg-green-800 text-white rounded-lg py-3 font-bold">
+                Sì, consegna
+              </button>
+              <button onClick={() => setConfermaConsegna(false)} className="flex-1 rounded-lg py-3 border border-slate-300 text-slate-700">
+                Continua
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => setConfermaConsegna(true)} className="bg-green-800 text-white rounded-lg py-4 text-lg font-bold mt-2">
+            Consegna
+          </button>
+        )}
       </main>
     </div>
   )

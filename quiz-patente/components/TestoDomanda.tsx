@@ -1,4 +1,4 @@
-import { Domanda } from '@/lib/quiz'
+import { Domanda, urlFigura } from '@/lib/quiz'
 
 export default function TestoDomanda({ domanda }: { domanda: Domanda }) {
   return (
@@ -6,7 +6,7 @@ export default function TestoDomanda({ domanda }: { domanda: Domanda }) {
       {domanda.img && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={domanda.img}
+          src={urlFigura(domanda.img)}
           alt="Figura della domanda"
           className="mx-auto mb-4 max-h-48 w-auto object-contain"
         />
