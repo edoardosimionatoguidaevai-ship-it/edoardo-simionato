@@ -30,6 +30,7 @@ export function messaggioSimulazione(
   domande: DomandaConCapitolo[],
   risposte: (boolean | null)[],
   capitoli: Capitolo[],
+  linkScheda: string,
 ): string {
   const titoli = new Map(capitoli.map(c => [c.id, c.titolo]))
   const righe = [
@@ -37,6 +38,8 @@ export function messaggioSimulazione(
     `Allievo: ${nome}`,
     `Data: ${formattaData(simulazione.data)}`,
     `Esito: *${simulazione.superato ? 'IDONEO' : 'NON IDONEO'}* – ${simulazione.errori} ${simulazione.errori === 1 ? 'errore' : 'errori'} su ${domande.length} (tempo ${formattaDurata(simulazione.durataSecondi)})`,
+    '',
+    `📷 Scheda completa con le figure: ${linkScheda}`,
   ]
   const sbagliate = domande.map((d, i) => ({ d, r: risposte[i] })).filter(({ d, r }) => r !== d.a)
   if (sbagliate.length > 0) {

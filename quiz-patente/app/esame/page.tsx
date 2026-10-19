@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Intestazione from '@/components/Intestazione'
 import TestoDomanda from '@/components/TestoDomanda'
+import RisultatoSimulazione, { formattaTempo } from '@/components/RisultatoSimulazione'
 import {
   Capitolo,
   DomandaConCapitolo,
@@ -12,18 +13,12 @@ import {
   ESAME_MINUTI,
   caricaCapitoli,
   generaEsame,
-  urlFigura,
 } from '@/lib/quiz'
 import { Simulazione, getNome, registraRisposte, registraSimulazione } from '@/lib/progressi'
+import { linkScheda } from '@/lib/scheda'
 import { linkWhatsApp, messaggioSimulazione } from '@/lib/whatsapp'
 
 type Fase = 'inizio' | 'in-corso' | 'risultato'
-
-function formattaTempo(secondi: number): string {
-  const m = Math.floor(secondi / 60)
-  const s = secondi % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
 
 export default function Esame() {
   const [fase, setFase] = useState<Fase>('inizio')
@@ -34,7 +29,6 @@ export default function Esame() {
   const [inizio, setInizio] = useState(0)
   const [rimanenti, setRimanenti] = useState(ESAME_MINUTI * 60)
   const [simulazione, setSimulazione] = useState<Simulazione | null>(null)
-  const [soloErrori, setSoloErrori] = useState(true)
   const [caricamento, setCaricamento] = useState(false)
   const [errore, setErrore] = useState(false)
   const [confermaConsegna, setConfermaConsegna] = useState(false)
@@ -51,7 +45,6 @@ export default function Esame() {
       setIndice(0)
       setInizio(Date.now())
       setRimanenti(ESAME_MINUTI * 60)
-      setSoloErrori(true)
       setConfermaConsegna(false)
       setFase('in-corso')
     } catch {
@@ -137,76 +130,37 @@ export default function Esame() {
   }
 
   if (fase === 'risultato' && simulazione) {
-    const errori = domande.filter((d, i) => risposte[i] !== d.a).length
-    const superato = errori <= ESAME_ERRORI_MAX
-    const elenco = domande.map((d, i) => ({ d, i })).filter(({ d, i }) => !soloErrori || risposte[i] !== d.a)
+    const nome = getNome()
+    const scheda = linkScheda(nome, simulazione, domande, risposte)
     return (
       <div className="min-h-full">
         <Intestazione titolo="Risultato" indietro="/" />
-        <main className="max-w-xl mx-auto px-4 py-4 flex flex-col gap-4">
-          <div className={`rounded-lg p-6 text-center text-white ${superato ? 'bg-green-700' : 'bg-red-600'}`}>
-            <p className="text-2xl font-bold">{superato ? 'IDONEO' : 'NON IDONEO'}</p>
-            <p className="mt-1">
-              {errori} {errori === 1 ? 'errore' : 'errori'} su {domande.length} · tempo {formattaTempo(simulazione.durataSecondi)}
-            </p>
-          </div>
-
-          <a
-            href={linkWhatsApp(messaggioSimulazione(getNome(), simulazione, domande, risposte, capitoli))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block text-center bg-[#25D366] text-white rounded-lg py-3 font-bold"
-          >
-            📤 Invia all&apos;istruttore su WhatsApp
-          </a>
-
-          <div className="flex gap-2">
-            <button onClick={inizia} className="flex-1 bg-green-800 text-white rounded-lg py-3 font-semibold">
-              Nuova simulazione
-            </button>
-            <Link href="/" className="flex-1 text-center rounded-lg py-3 border border-slate-300 text-slate-700 bg-white">
-              Home
-            </Link>
-          </div>
-
-          <div className="flex rounded-lg border border-slate-300 overflow-hidden text-sm font-semibold">
-            <button onClick={() => setSoloErrori(true)} className={`flex-1 py-2 ${soloErrori ? 'bg-slate-700 text-white' : 'bg-white text-slate-600'}`}>
-              Solo errori ({errori})
-            </button>
-            <button onClick={() => setSoloErrori(false)} className={`flex-1 py-2 ${!soloErrori ? 'bg-slate-700 text-white' : 'bg-white text-slate-600'}`}>
-              Tutte ({domande.length})
-            </button>
-          </div>
-
-          <ul className="flex flex-col gap-3">
-            {elenco.map(({ d, i }) => {
-              const giusta = risposte[i] === d.a
-              return (
-                <li key={d.id} className={`bg-white rounded-lg border-l-4 ${giusta ? 'border-green-600' : 'border-red-500'} border border-slate-200 p-4`}>
-                  <p className="text-xs text-slate-400 mb-2">Domanda {i + 1}</p>
-                  <div className="flex gap-3">
-                    {d.img && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={urlFigura(d.img)} alt="Figura della domanda" className="w-20 h-20 object-contain shrink-0" />
-                    )}
-                    <p className="text-slate-800">{d.q}</p>
-                  </div>
-                  <p className="text-sm mt-2">
-                    <span className="text-slate-500">Risposta corretta: </span>
-                    <span className="font-bold text-green-700">{d.a ? 'VERO' : 'FALSO'}</span>
-                    {!giusta && (
-                      <>
-                        <span className="text-slate-500"> · tua: </span>
-                        <span className="font-bold text-red-600">
-                          {risposte[i] === null ? 'nessuna' : risposte[i] ? 'VERO' : 'FALSO'}
-                        </span>
-                      </>
-                    )}
-                  </p>
-                </li>
-              )
-            })}
-          </ul>
+        <main className="max-w-xl mx-auto px-4 py-4">
+          <RisultatoSimulazione
+            domande={domande}
+            risposte={risposte}
+            simulazione={simulazione}
+            azioni={
+              <>
+                <a
+                  href={linkWhatsApp(messaggioSimulazione(nome, simulazione, domande, risposte, capitoli, scheda))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center bg-[#25D366] text-white rounded-lg py-3 font-bold"
+                >
+                  📤 Invia all&apos;istruttore su WhatsApp
+                </a>
+                <div className="flex gap-2">
+                  <button onClick={inizia} className="flex-1 bg-green-800 text-white rounded-lg py-3 font-semibold">
+                    Nuova simulazione
+                  </button>
+                  <Link href="/" className="flex-1 text-center rounded-lg py-3 border border-slate-300 text-slate-700 bg-white">
+                    Home
+                  </Link>
+                </div>
+              </>
+            }
+          />
         </main>
       </div>
     )
