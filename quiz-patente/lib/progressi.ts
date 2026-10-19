@@ -5,6 +5,7 @@ import { useMemo, useSyncExternalStore } from 'react'
 const KEY_RISPOSTE = 'quizpatente-risposte'
 const KEY_SIMULAZIONI = 'quizpatente-simulazioni'
 const KEY_NOME = 'quizpatente-nome'
+const KEY_LETTURA = 'quizpatente-lettura-automatica'
 const MAX_SIMULAZIONI = 50
 
 // Ultimo esito per ogni domanda: 1 = risposta giusta, 0 = sbagliata.
@@ -99,6 +100,15 @@ export function getNome(): string {
 
 export function salvaNome(nome: string): void {
   scrivi(KEY_NOME, nome.trim())
+}
+
+// Se attiva, ogni domanda viene letta ad alta voce appena compare
+export function useLetturaAutomatica(): boolean {
+  return useSalvato<boolean>(KEY_LETTURA, false) ?? false
+}
+
+export function salvaLetturaAutomatica(attiva: boolean): void {
+  scrivi(KEY_LETTURA, attiva)
 }
 
 export function azzeraProgressi(): void {

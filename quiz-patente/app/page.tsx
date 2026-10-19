@@ -4,7 +4,16 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Intestazione from '@/components/Intestazione'
 import { Capitolo, ESAME_DOMANDE, ESAME_ERRORI_MAX, ESAME_MINUTI, caricaCapitoli } from '@/lib/quiz'
-import { azzeraProgressi, idErrori, salvaNome, useNome, useRisposte, useSimulazioni } from '@/lib/progressi'
+import {
+  azzeraProgressi,
+  idErrori,
+  salvaLetturaAutomatica,
+  salvaNome,
+  useLetturaAutomatica,
+  useNome,
+  useRisposte,
+  useSimulazioni,
+} from '@/lib/progressi'
 import { linkWhatsApp, messaggioProgressi } from '@/lib/whatsapp'
 
 function RichiestaNome({ iniziale, onSalvato, onAnnulla }: {
@@ -49,6 +58,7 @@ export default function Home() {
   const nome = useNome()
   const risposte = useRisposte()
   const simulazioni = useSimulazioni()
+  const letturaAutomatica = useLetturaAutomatica()
   const [capitoli, setCapitoli] = useState<Capitolo[] | null>(null)
   const [modificaNome, setModificaNome] = useState(false)
   const [confermaAzzera, setConfermaAzzera] = useState(false)
@@ -119,6 +129,19 @@ export default function Home() {
             {errori === 0 ? 'Nessun errore da ripassare' : `${errori} ${errori === 1 ? 'domanda sbagliata' : 'domande sbagliate'} da ripassare`}
           </p>
         </Link>
+
+        <label className="flex items-center gap-3 bg-white rounded-lg border border-slate-200 p-4 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={letturaAutomatica}
+            onChange={e => salvaLetturaAutomatica(e.target.checked)}
+            className="w-5 h-5 accent-green-800"
+          />
+          <span>
+            <span className="block font-semibold text-slate-800">🔊 Leggi le domande ad alta voce</span>
+            <span className="block text-sm text-slate-500">Ogni domanda viene letta appena compare. Puoi sempre usare il tasto Ascolta.</span>
+          </span>
+        </label>
 
         <section className="bg-white rounded-lg border border-slate-200 p-4 mt-2">
           <h2 className="font-bold text-slate-800 mb-1">Ultime simulazioni</h2>
