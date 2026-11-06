@@ -11,10 +11,6 @@ Al primo avvio l'allievo inserisce nome e cognome; con i pulsanti verdi può inv
 su WhatsApp il risultato di una simulazione (con l'elenco degli errori) o il riepilogo dei progressi.
 Il numero dell'istruttore si imposta in `lib/whatsapp.ts` (`NUMERO_WHATSAPP_ISTRUTTORE`); se è vuoto,
 WhatsApp chiede all'allievo a quale contatto inviare.
-Al primo avvio l'allievo inserisce nome e cognome; con i pulsanti verdi può inviare all'istruttore
-su WhatsApp il risultato di una simulazione (con l'elenco degli errori) o il riepilogo dei progressi.
-Il numero dell'istruttore si imposta in `lib/whatsapp.ts` (`NUMERO_WHATSAPP_ISTRUTTORE`); se è vuoto,
-WhatsApp chiede all'allievo a quale contatto inviare.
 
 ## Domande
 
