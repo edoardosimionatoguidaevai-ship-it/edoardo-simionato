@@ -77,6 +77,12 @@ export function domandeCapitolo(capitolo: Capitolo, quante: number): DomandaConC
   return mescola(capitolo.domande).slice(0, quante).map(d => conCapitolo(capitolo, d))
 }
 
+// Pesca le domande da più capitoli insieme, mescolate tra loro.
+export function domandeCapitoli(capitoli: Capitolo[], quante: number): DomandaConCapitolo[] {
+  const tutte = capitoli.flatMap(c => c.domande.map(d => conCapitolo(c, d)))
+  return mescola(tutte).slice(0, quante)
+}
+
 export function domandePerId(capitoli: Capitolo[], ids: Set<string>): DomandaConCapitolo[] {
   const trovate: DomandaConCapitolo[] = []
   for (const c of capitoli) {
