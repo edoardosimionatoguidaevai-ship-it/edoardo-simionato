@@ -66,6 +66,12 @@ export default function SchedaAllievo() {
     setAllievo(getAllievo(allievo.id))
   }
 
+  function toggleProntoEsame() {
+    if (!allievo) return
+    updateAllievo(allievo.id, { prontoEsame: !allievo.prontoEsame })
+    setAllievo(getAllievo(allievo.id))
+  }
+
   function setNote(value: string) {
     if (!allievo) return
     updateAllievo(allievo.id, { note: value })
@@ -112,7 +118,21 @@ export default function SchedaAllievo() {
         </button>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-lg font-bold">{allievo.cognome} {allievo.nome}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg font-bold">{allievo.cognome} {allievo.nome}</h1>
+              <button
+                type="button"
+                onClick={toggleProntoEsame}
+                aria-pressed={!!allievo.prontoEsame}
+                className={`text-xs font-semibold rounded-full px-3 py-1 border ${
+                  allievo.prontoEsame
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'bg-transparent border-blue-300 text-blue-100'
+                }`}
+              >
+                {allievo.prontoEsame ? '✓ Pronto esame' : '☐ Pronto esame'}
+              </button>
+            </div>
             <div className="flex items-center gap-2 mt-1">
               <label htmlFor="data-esame" className="text-xs text-blue-200">Data esame</label>
               <input
