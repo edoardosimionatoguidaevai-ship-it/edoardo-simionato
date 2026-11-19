@@ -4,6 +4,7 @@ export interface Allievo {
   cognome: string
   telefono?: string
   dataEsame?: string // YYYY-MM-DD
+  prontoEsame?: boolean // spuntato dall'istruttore quando l'allievo è pronto per l'esame
   foto?: string // data URL (JPEG compresso), solo per riconoscimento nell'app
   note?: string // note libere dell'istruttore, non incluse nel report PDF
 }
