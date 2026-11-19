@@ -47,6 +47,7 @@ export interface GuideCertificate {
   madignano: boolean
   lodi: boolean
   pandino: boolean
+  sanBernardino: boolean
   domandePrimaFase: boolean
   simulazioneEsame: boolean
 }
@@ -63,6 +64,7 @@ export const ALTRE_VERIFICHE_LABELS: { key: keyof GuideCertificate; label: strin
   { key: 'madignano', label: 'Madignano' },
   { key: 'lodi', label: 'Lodi' },
   { key: 'pandino', label: 'Pandino' },
+  { key: 'sanBernardino', label: 'S. Bernardino' },
   { key: 'domandePrimaFase', label: 'Domande prima fase' },
   { key: 'simulazioneEsame', label: 'Simulazione esame' },
 ]
@@ -92,6 +94,7 @@ function schedaVuota(allievoId: string): Scheda {
       madignano: false,
       lodi: false,
       pandino: false,
+      sanBernardino: false,
       domandePrimaFase: false,
       simulazioneEsame: false,
     },
