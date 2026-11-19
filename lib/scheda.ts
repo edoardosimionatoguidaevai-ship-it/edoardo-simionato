@@ -30,6 +30,7 @@ export const VOCI: Voce[] = [
   { id: 'parcheggio-s', area: 'MANOVRE', argomento: 'Parcheggio a S', puntiChiave: 'Posizione; controlli; retro; sterzata/controsterzata; allineamento.' },
   { id: 'parcheggio-l', area: 'MANOVRE', argomento: 'Parcheggio a L', puntiChiave: 'Posizione; controlli; retro lenta; sterzata; allineamento/correzioni.' },
   { id: 'inversione', area: 'MANOVRE', argomento: 'Inversione di marcia', puntiChiave: 'Luogo sicuro; controlli; segnalazione; pedali-volante; conclusione.' },
+  { id: 'partenza-salita', area: 'MANOVRE', argomento: 'Partenza in salita', puntiChiave: 'Freno a mano; specchi e freccia; punto di stacco; gas dosato; rilascio freno a mano senza arretrare.' },
   { id: 'rallento-scalo', area: 'TECNICA', argomento: 'Rallento e scalo', puntiChiave: 'Specchi; rilascio gas; freno; frizione; marcia adeguata; ripresa.' },
   { id: 'extraurbana', area: 'AMBIENTI', argomento: 'Extraurbana', puntiChiave: 'Velocità; curve; distanza; sorpasso; marcia; segnaletica.' },
   { id: 'extraurbana-principale', area: 'AMBIENTI', argomento: 'Extraurbana principale', puntiChiave: 'Accelerazione; inserimento; corsie; sorpasso; decelerazione; uscita.' },
@@ -43,6 +44,9 @@ export interface GuideCertificate {
   notturne: boolean
   sanCarlo: boolean
   castelnuovo: boolean
+  madignano: boolean
+  lodi: boolean
+  pandino: boolean
   domandePrimaFase: boolean
   simulazioneEsame: boolean
 }
@@ -56,6 +60,9 @@ export const GUIDE_LABELS: { key: keyof GuideCertificate; label: string }[] = [
 export const ALTRE_VERIFICHE_LABELS: { key: keyof GuideCertificate; label: string }[] = [
   { key: 'sanCarlo', label: 'San Carlo' },
   { key: 'castelnuovo', label: 'Castelnuovo' },
+  { key: 'madignano', label: 'Madignano' },
+  { key: 'lodi', label: 'Lodi' },
+  { key: 'pandino', label: 'Pandino' },
   { key: 'domandePrimaFase', label: 'Domande prima fase' },
   { key: 'simulazioneEsame', label: 'Simulazione esame' },
 ]
@@ -82,6 +89,9 @@ function schedaVuota(allievoId: string): Scheda {
       notturne: false,
       sanCarlo: false,
       castelnuovo: false,
+      madignano: false,
+      lodi: false,
+      pandino: false,
       domandePrimaFase: false,
       simulazioneEsame: false,
     },
@@ -92,7 +102,10 @@ export function getScheda(allievoId: string): Scheda {
   if (typeof window === 'undefined') return schedaVuota(allievoId)
   const data = localStorage.getItem(KEY_PREFIX + allievoId)
   if (!data) return schedaVuota(allievoId)
-  return { ...schedaVuota(allievoId), ...JSON.parse(data) }
+  const vuota = schedaVuota(allievoId)
+  const salvata = JSON.parse(data)
+  // Le verifiche aggiunte dopo (es. Madignano, Lodi, Pandino) partono da "non fatte" anche nelle schede già salvate
+  return { ...vuota, ...salvata, guideCertificate: { ...vuota.guideCertificate, ...salvata.guideCertificate } }
 }
 
 export function saveScheda(scheda: Scheda): void {
