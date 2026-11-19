@@ -12,8 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // App quiz separata, con la sua configurazione
-    "quiz-patente/**",
   ]),
 ]);
 
